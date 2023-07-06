@@ -1,8 +1,9 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:messanger/NewsApp%20copy/webview/web_view.dart';
 import 'package:messanger/todo_cubit%20copy/cubit.dart';
 
-
+import '../NewsApp/webview/web_view.dart';
 
 Widget defaultButton({
   double width = double.infinity,
@@ -179,70 +180,140 @@ Widget tasksEmpty({required List<Map> tasks}) => ConditionalBuilder(
           ),
         ));
 
+Widget artical(aratical, context) => InkWell(
+      onTap: () => navigateTo(context, webveiw(url: aratical['url'])),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                aratical['urlToImage'] != null
+                        ?
+                Image.network(
+                  
+                  "${aratical['urlToImage']}",
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                ):
+                Image.network(
+                   width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png')
+                
+                ,
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 120,
+                    child: Column(
+                      children: [
+                        Text(
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          "${aratical['title']}",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        Spacer(),
+                        Text(
+                          "${aratical['publishedAt']}",
+                          style: TextStyle(fontSize: 20, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+Widget listartical(buslist, context, {required int listcount,isseach=false,}) =>
+    ConditionalBuilder(
+      condition: buslist.length > 0,
+      builder: (context) => ListView.separated(
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) => artical(buslist[index], context),
+          separatorBuilder: (context, index) => divider(),
+          itemCount: listcount),
+      fallback: (context) =>isseach?Container(): Center(child: CircularProgressIndicator()),
+    );
+Widget buildArticleItems(article, context) => InkWell(
+      onTap: () {
+        navigateTo(
+            context,
+            WebViewScreen(
+              url: article['url'],
+            ));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: article['urlToImage'] != null
+                        ? DecorationImage(
+                            image: NetworkImage('${article['urlToImage']}'),
+                            fit: BoxFit.cover)
+                        : DecorationImage(
+                            image: NetworkImage(
+                                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png'),
+                          ))),
+            SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: Container(
+                height: 120,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${article['title']}',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      '${article['publishedAt']}',
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
 
-// Widget buildArticleItems(article,context)=>InkWell (
-//   onTap: (){
-//     navigateTo(context, WebViewScreen(url: article['url'],));
-//   },
-//   child:   Padding(
-//     padding: const EdgeInsets.all(20.0),
-//     child: Row(
-//       children: [
-//         Container(
-//           width: 120,
-//           height: 120,
-//           decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(10),
-//               image: article['urlToImage'] !=null
-//               ?DecorationImage(
-//                 image:NetworkImage('${article['urlToImage']}'),
-//                   fit: BoxFit.cover)
-//                   : DecorationImage(image: NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png'),
-//           )
-//           )
-//         ),
-//           SizedBox(
-//           width: 20,
-//         ),
-//         Expanded(
-//           child: Container(
-//             height: 120,
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.start,
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Expanded(
-//                   child: Text('${article['title']}',
-//                     style: Theme.of(context).textTheme.bodyText1,
-//                     maxLines: 3,
-//                     overflow: TextOverflow.ellipsis,
-//                   ),
-//                 ),
-//                 Text(
-//                   '${article['publishedAt']}',
-//                   style: TextStyle(
-//                       color: Colors.grey
-//                   ),
-//                 )
-//               ],
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   ),
-// );
-
-// Widget articleBuilder(businessList,
-//     context,{required int itemCount,isSearch=false})=> ConditionalBuilder(
-//   condition: businessList.length>0,
-//   builder: (context)=> ListView.separated(
-//       physics: BouncingScrollPhysics(),
-//       itemBuilder: (context,index)=>buildArticleItems(businessList[index],context),
-//       separatorBuilder:(context ,index)=>dividerWidget() ,
-//       itemCount:itemCount),
-//   fallback: (context)=>isSearch?Container():Center(child: CircularProgressIndicator()),
-// );
+Widget articleBuilder(businessList, context,
+        {required int itemCount, isSearch = false}) =>
+    ConditionalBuilder(
+      condition: businessList.length > 0,
+      builder: (context) => ListView.separated(
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) =>
+              buildArticleItems(businessList[index], context),
+          separatorBuilder: (context, index) => dividerWidget(),
+          itemCount: itemCount),
+      fallback: (context) =>
+          isSearch ? Container() : Center(child: CircularProgressIndicator()),
+    );
 
 Widget dividerWidget() => Container(
       width: double.infinity,
